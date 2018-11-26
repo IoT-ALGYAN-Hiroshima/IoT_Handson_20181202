@@ -1,16 +1,20 @@
 /**
- * @file  Arduino_MQTT_Temperature.ino
+ * @file  STM32MQTT.ino
  * 
- * @brief MQTT経由で温度・湿度センサーの値をモニタリングします
+ * @brief MQTT経由で温度・湿度センサー等のセンサー値をモニタリングします
  *
  * @author IoT Algyan in Hiroshima. K.Nakamura.
  *
- * @date   2018.11.03
+ * @date   2018.11.27
 */
 
 /** 
  * 温度・湿度センサー : HTS221
- * ライブラリ         : STM32duino_HTS221
+ * 気圧計センサー     : LPS22HB
+ * ３Ｄジャイロセンサ・加速度センサー : LSM6DSL
+ * ライブラリ         : STM32duino_LPS22HB
+ *                　  : STM32duino_HTS221
+ *                    : STMduino_LSM6DSL
  * 
  * WIFIドライバー     : STM32duino_ISM43362-M3G-L44
  * MQTTクライアント   : PubSubClient
