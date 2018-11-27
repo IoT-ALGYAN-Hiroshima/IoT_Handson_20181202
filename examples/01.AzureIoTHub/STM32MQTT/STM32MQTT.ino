@@ -37,6 +37,8 @@ const char* password    = "12345678";
 //const char* password    = "kei.nak5";
 // MQTT サーバ (ＩＰアドレス)
 #define AIO_SERVER      "192.168.11.2"
+//#define AIO_SERVER      "192.168.137.1"
+
 // MQTT サーバ (ポート番号)
 #define AIO_SERVERPORT  1883
 // MQTT サーバ (ユーザーＩＤ)
@@ -73,6 +75,8 @@ PubSubClient client(STClient);
 long lastMsg = 0;
 char publishMsg[512];
 char cid[32] = {0};
+char stemperature[16] = {0};
+char spressure[16] = {0};
 
 /**
  * セットアップ
@@ -148,7 +152,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 
   // クライアントIDを作成
-  sprintf(cid, "cid_%d", (int)WiFi.localIP()[3]);
+  sprintf(cid, "%d", (int)WiFi.localIP()[3]);
   Serial.print("cid : ");
   Serial.println(cid);
 }
@@ -224,16 +228,22 @@ void loop() {
 
     // 気温の取得
     HumTemp->GetTemperature(&temperature);
+    // 温度(float)を、文字列に変換(文字列長６文字、小数部２桁)
+    dtostrf(temperature, 6, 2, stemperature);
     // 湿度の取得
     HumTemp->GetHumidity(&humidity);
     // 気圧の取得
     PressTemp->GetPressure(&pressure);
+    // 温度(float)を、文字列に変換(文字列長６文字、小数部２桁)
+    dtostrf(pressure, 6, 2, spressure);
     // ３軸地磁気センサのセンサデータの読み出し
     Magneto->GetAxes(magnetometer);
 
     // publishメッセージ(json)の構築
-    snprintf(publishMsg, 512, "{\"cid\":%s,\"temperature\":%4.1f, \"humidity\":%u, \"pressure\":%4.1f, \"MagX\":%d, \"MagY\":%d, \"MagZ\":%d}",
-            cid, temperature, (unsigned int)humidity, pressure, magnetometer[0], magnetometer[1], magnetometer[2]);
+//  snprintf(publishMsg, 512, "{\"temperature\":%s, \"humidity\":%u, \"pressure\":%s, \"MagX\":%d, \"MagY\":%d, \"MagZ\":%d}",
+//            stemperature, (unsigned int)humidity, spressure, magnetometer[0], magnetometer[1], magnetometer[2]);
+    snprintf(publishMsg, 512, "{\"cid\":%s, \"temperature\":%s, \"humidity\":%u, \"pressure\":%s, \"MagX\":%d, \"MagY\":%d, \"MagZ\":%d}",
+            cid, stemperature, (unsigned int)humidity, spressure, magnetometer[0], magnetometer[1], magnetometer[2]);
 
     // publish メッセージを送信
     client.publish(AIO_USERNAME"/feeds/data", publishMsg);
