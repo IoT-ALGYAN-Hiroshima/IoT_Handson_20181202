@@ -219,7 +219,9 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
-  client.loop();
+
+  // ３軸地磁気センサのセンサデータの読み出し
+  Magneto->GetAxes(magnetometer);
 
   // 前回から 10000msec (10秒) 経過していれば、Publishメッセージを送信
   long now = millis();
@@ -236,8 +238,6 @@ void loop() {
     PressTemp->GetPressure(&pressure);
     // 温度(float)を、文字列に変換(文字列長６文字、小数部２桁)
     dtostrf(pressure, 6, 2, spressure);
-    // ３軸地磁気センサのセンサデータの読み出し
-    Magneto->GetAxes(magnetometer);
 
     // publishメッセージ(json)の構築
 //  snprintf(publishMsg, 512, "{\"temperature\":%s, \"humidity\":%u, \"pressure\":%s, \"MagX\":%d, \"MagY\":%d, \"MagZ\":%d}",
@@ -250,5 +250,25 @@ void loop() {
 
     Serial.print("Publish : ");
     Serial.println(publishMsg);
+  }
+
+  // 北の方位を計算
+  double northAngle = atan2((double)magnetometer[1], (double)magnetometer[0]) * 180.0 / PI;
+//  Serial.print(", North Angle = ");
+//  Serial.println(northAngle);
+
+  // 北を向いたらLEDを早く点滅する
+  if (-10.0 <= northAngle && northAngle <= 10.0) {
+    for (int idx = 0; idx < 5; ++idx) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(50);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(50);
+    }
+  } else {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(250);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(250);
   }
 }
