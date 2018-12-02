@@ -31,14 +31,10 @@
 
 // WiFi 設定 (SSID)
 char* ssid              = "Buffalo-G-AE22";
-//char* ssid              = "kei.nak5";
 // WiFi 設定 (パスワード)
 const char* password    = "12345678";
-//const char* password    = "kei.nak5";
 // MQTT サーバ (ＩＰアドレス)
 #define AIO_SERVER      "192.168.11.2"
-//#define AIO_SERVER      "192.168.137.1"
-
 // MQTT サーバ (ポート番号)
 #define AIO_SERVERPORT  1883
 // MQTT サーバ (ユーザーＩＤ)
