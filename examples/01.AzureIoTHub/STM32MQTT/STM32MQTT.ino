@@ -73,7 +73,7 @@ char publishMsg[512];
 char cid[32] = {0};
 char stemperature[16] = {0};
 char spressure[16] = {0};
-
+char clientId[32] = {0};
 /**
  * セットアップ
  */
@@ -151,6 +151,9 @@ void setup_wifi() {
   sprintf(cid, "%d", (int)WiFi.localIP()[3]);
   Serial.print("cid : ");
   Serial.println(cid);
+
+  // クライアントID文字列を作成
+  sprintf(clientId, "STMClient%s", cid);
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -183,9 +186,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void reconnect() {
   // MQTT接続ループ
   while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection ");
+    Serial.print(clientId);
+    Serial.print(" ...");
     // MQTT接続処理
-    if (client.connect("STM32Client", AIO_USERNAME, AIO_KEY)) {
+    if (client.connect(clientId, AIO_USERNAME, AIO_KEY)) {
       Serial.println("connected");
       // 接続時のメッセージ (以下は Topicが "user/feeds/hello", Payloadが "Hi, I'm STM32 user!"となる)
       client.publish(AIO_USERNAME"/feeds/hello", "Hi, I'm STM32 user!");
